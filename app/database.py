@@ -2,10 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import string
 import random
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -13,6 +14,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default = datetime.now())
     updated_at = db.Column(db.DateTime, onupdate = datetime.now())
     bookmarks = db.relationship('Bookmark', backref="user")
+    posts = db.relationship('Blogpost', backref="poster")
 
     def __repr__(self) -> str:
         return 'User>>>{self.username}'
@@ -25,6 +27,7 @@ class Bookmark(db.Model):
     short_url = db.Column(db.String(3), nullable=True)
     visits = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    blog_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
     created_at = db.Column(db.DateTime, default = datetime.now())
     updated_at = db.Column(db.DateTime, onupdate = datetime.now())
 
